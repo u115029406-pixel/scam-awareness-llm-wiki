@@ -1,9 +1,11 @@
+<!-- PART 1 START -->
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f5f9fc">
+  <meta name="description" content="以互動情境與測驗，練習辨識網路詐騙並了解官方查證及求助管道。">
   <title>別掉入陷阱——你真的能辨識網路詐騙嗎？</title>
   <style>
     :root {
@@ -25,6 +27,8 @@
     }
 
     * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
 
     body {
       margin: 0;
@@ -152,6 +156,7 @@
     }
 
     h1, h2, h3, p { margin-top: 0; }
+
     h1, h2 {
       max-width: 800px;
       margin-bottom: 18px;
@@ -169,6 +174,12 @@
       font-size: clamp(.98rem, 1.45vw, 1.12rem);
       line-height: 1.75;
     }
+
+    ul, ol { padding-left: 1.3em; }
+    li + li { margin-top: 6px; }
+
+    a { color: var(--blue-dark); }
+    a:hover { color: var(--blue); }
 
     .lead {
       max-width: 720px;
@@ -189,6 +200,7 @@
     }
 
     .hero h1 span { color: var(--blue); }
+
     .hero-art {
       position: absolute;
       right: 9%;
@@ -203,6 +215,7 @@
       background: rgba(255,255,255,.65);
       box-shadow: 0 18px 45px rgba(48, 105, 145, .10);
       font-size: clamp(3.2rem, 8vw, 6rem);
+      pointer-events: none;
     }
 
     .hero-copy { position: relative; z-index: 1; }
@@ -245,7 +258,9 @@
 
     .button:hover { border-color: #82b0cd; background: #f4f9fc; }
     .button:active { transform: translateY(1px); }
-    .button:focus-visible, a:focus-visible {
+    .button:disabled { cursor: not-allowed; opacity: .55; }
+
+    .button:focus-visible, a:focus-visible, .quiz-option:focus-visible {
       outline: 3px solid #81b9dd;
       outline-offset: 3px;
     }
@@ -279,6 +294,7 @@
     }
 
     .card p:last-child { margin-bottom: 0; }
+
     .card .number {
       display: inline-grid;
       place-items: center;
@@ -383,6 +399,9 @@
     }
     .reveal.visible { display: block; animation: enter .2s ease both; }
 
+    .reveal-list { padding-left: 1.25em; }
+    .reveal-list li { margin-bottom: 8px; }
+
     .quiz-options {
       display: grid;
       gap: 10px;
@@ -425,4 +444,731 @@
       border-radius: 13px;
       line-height: 1.65;
     }
-    .feedback.visible { display: block;*
+    .feedback.visible { display: block; }
+    .feedback.correct-feedback {
+      color: #205b46;
+      background: var(--green-pale);
+      border: 1px solid #cce8da;
+    }
+    .feedback.incorrect-feedback {
+      color: #80383e;
+      background: var(--red-pale);
+      border: 1px solid #f0d0d2;
+    }
+
+    .quiz-score {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--blue-dark);
+      background: var(--blue-pale);
+      font-size: .92rem;
+      font-weight: 750;
+    }
+
+    .source-row {
+      margin-top: auto;
+      padding-top: 24px;
+      border-top: 1px solid #e8eef3;
+      color: var(--muted);
+      font-size: .82rem;
+    }
+
+    .source-row a {
+      display: inline-flex;
+      padding: 4px 8px;
+      border: 1px solid #dce7ee;
+      border-radius: 999px;
+      color: #47657e;
+      background: #f8fbfd;
+      font-size: .8rem;
+      text-decoration: none;
+    }
+
+    .source-row a:hover { border-color: #9fc2d9; color: var(--blue-dark); }
+
+    .bottombar { min-height: 48px; }
+    .nav-group { display: flex; gap: 10px; }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    @media (max-width: 720px) {
+      .app { padding: 14px 14px 12px; gap: 12px; }
+      .deck { border-radius: 20px; }
+      .slide { min-height: 600px; padding: 26px 21px; }
+      .hero { min-height: 600px; }
+      .hero-art { right: 7%; top: 10%; opacity: .55; }
+      .hero-copy { margin-top: 110px; }
+      .split { grid-template-columns: 1fr; gap: 12px; }
+      .card-grid { grid-template-columns: 1fr; }
+      .topbar { align-items: flex-start; }
+      .brand { max-width: 58%; font-size: .8rem; }
+      .top-actions { gap: 8px; }
+      .page-count { min-width: 68px; font-size: .8rem; }
+      .scenario-actions { grid-template-columns: 1fr; }
+      .source-row { padding-top: 18px; }
+    }
+
+    @media (max-width: 420px) {
+      .app { padding-inline: 10px; }
+      .brand-mark { width: 30px; height: 30px; }
+      .top-actions .button { min-height: 38px; }
+      .button { padding: 9px 12px; }
+      .slide { padding: 23px 17px; }
+      .bottombar { gap: 8px; }
+      .bottombar .small { font-size: .78rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+<!-- PART 2 START -->
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">◈</span>
+        <span>別掉入陷阱｜互動防詐簡報</span>
+      </div>
+      <div class="top-actions">
+        <span class="page-count" id="pageCount" aria-live="polite">01 / 16</span>
+        <button class="button icon-button" id="topPrev" type="button" aria-label="上一頁" title="上一頁">←</button>
+        <button class="button icon-button" id="topNext" type="button" aria-label="下一頁" title="下一頁">→</button>
+      </div>
+    </header>
+
+    <div class="progress-track" role="progressbar" aria-label="簡報進度"
+         aria-valuemin="1" aria-valuemax="16" aria-valuenow="1" id="progressBar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <main class="deck" id="deck" aria-label="互動簡報">
+      <!-- 01 -->
+      <section class="slide hero active" aria-labelledby="slide-title-1">
+        <div class="hero-art" aria-hidden="true">◈</div>
+        <div class="hero-copy">
+          <p class="eyebrow">01 · 開場</p>
+          <h1 id="slide-title-1">別掉入陷阱<br><span>你真的能辨識網路詐騙嗎？</span></h1>
+          <p class="lead">從一則通知、一通電話或一個熟悉的帳號開始，練習先停下、看清要求，再透過官方管道查證。</p>
+          <div class="tag-row" aria-label="簡報內容">
+            <span class="tag">情境判斷</span>
+            <span class="tag">辨識線索</span>
+            <span class="tag">互動測驗</span>
+          </div>
+          <div class="button-row" style="margin-top:24px">
+            <button class="button primary" type="button" data-go="1">開始簡報 <span aria-hidden="true">→</span></button>
+          </div>
+        </div>
+        <div class="source-row">
+          Wiki：
+          <a href="../wiki/index.md">index.md</a>
+          <a href="../wiki/basic-concepts.md">basic-concepts.md</a>
+          SRC：<a href="../raw/SRC-003.md">003</a><a href="../raw/SRC-004.md">004</a><a href="../raw/SRC-005.md">005</a><a href="../raw/SRC-006.md">006</a>
+        </div>
+      </section>
+
+      <!-- 02 -->
+      <section class="slide" aria-labelledby="slide-title-2">
+        <p class="eyebrow">02 · 情境挑戰</p>
+        <h2 id="slide-title-2">收到帳戶異常通知，你會怎麼做？</h2>
+        <div class="split">
+          <div>
+            <p class="small"><strong>教學示例・虛構情境，非真實案件</strong></p>
+            <div class="phone" aria-label="教學示例訊息">
+              <p class="phone-top">訊息通知 · 教學示例</p>
+              <div class="message">
+                <span class="sender">帳務通知（示例）</span>
+                帳戶驗證異常，請立即點選下方連結處理。若未完成，可能無法使用服務。<br>
+                <span class="fake-link">[教學示例連結，不可點擊]</span>
+              </div>
+            </div>
+            <p>請先選擇你會採取的做法：</p>
+            <div class="scenario-actions" id="scenarioChoices">
+              <button class="button primary" type="button" data-scenario-choice="click">點連結處理</button>
+              <button class="button" type="button" data-scenario-choice="verify">先停止並查證</button>
+            </div>
+            <div class="reveal" id="scenarioResult" aria-live="polite"></div>
+          </div>
+          <aside>
+            <div class="highlight">選擇後會逐步揭露線索。這個教學示例依 Wiki 所列情境編寫，不代表所有帳戶通知都是詐騙。</div>
+            <div class="reveal" id="scenarioClueBox">
+              <h3 style="margin-top:18px">逐步檢查線索</h3>
+              <ol class="reveal-list" id="scenarioClues"></ol>
+              <button class="button subtle" id="nextClue" type="button">揭露下一個線索</button>
+              <button class="button" id="resetScenario" type="button" style="display:none">重新判斷</button>
+            </div>
+          </aside>
+        </div>
+        <div class="source-row">
+          Wiki：<a href="../wiki/scam-detection.md">scam-detection.md</a><a href="../wiki/scam-tactics.md">scam-tactics.md</a>
+          SRC：<a href="../raw/SRC-004.md">004</a><a href="../raw/SRC-005.md">005</a>
+        </div>
+      </section>
+
+      <!-- 03 -->
+      <section class="slide" aria-labelledby="slide-title-3">
+        <p class="eyebrow">03 · 認識情境</p>
+        <h2 id="slide-title-3">網路詐騙有哪些樣貌？</h2>
+        <p class="lead">Wiki 整理的來源案例涵蓋不同接觸方式；這些是部分情境，不是完整分類，也不是每件詐騙都會照同一流程發生。</p>
+        <div class="card-grid">
+          <article class="card"><span class="number">01</span><h3>電話與金融操作</h3><p>以交易設定錯誤或重複扣款等理由，要求操作 ATM、網路銀行或購買遊戲點數。</p></article>
+          <article class="card"><span class="number">02</span><h3>網購與物流</h3><p>低價商品、社群私訊、疑似物流連結或假客服可能出現在來源記載的網購情境中。</p></article>
+          <article class="card"><span class="number">03</span><h3>釣魚連結與假網站</h3><p>假冒機構，利用訂單、付款、配送或帳戶問題引導點擊連結。</p></article>
+          <article class="card"><span class="number">04</span><h3>LINE 帳號與假客服</h3><p>帳號可能被冒用向好友借錢或傳送連結；來電者也可能假冒機構人員。</p></article>
+        </div>
+        <div class="highlight">重點不是背下所有類型，而是注意對方要求你採取什麼操作，並透過官方管道查證。</div>
+        <div class="source-row">
+          Wiki：<a href="../wiki/basic-concepts.md">basic-concepts.md</a><a href="../wiki/scam-types.md">scam-types.md</a>
+          SRC：<a href="../raw/SRC-003.md">003</a><a href="../raw/SRC-004.md">004</a><a href="../raw/SRC-005.md">005</a><a href="../raw/SRC-006.md">006</a>
+        </div>
+      </section>
+
+      <!-- 04 -->
+      <section class="slide" aria-labelledby="slide-title-4">
+        <p class="eyebrow">04 · 電話詐騙情境</p>
+        <h2 id="slide-title-4">ATM 不能幫你解除分期付款</h2>
+        <div class="split">
+          <div>
+            <p class="lead">來源記載的電話情境中，來電者可能以交易設定錯誤、重複扣款、升級 VIP 或系統出錯等理由，要求民眾進行金融操作。</p>
+            <div class="card-grid">
+              <article class="card"><h3>可能被要求</h3><p>操作 ATM、網路銀行，或到超商購買遊戲點數。</p></article>
+              <article class="card"><h3>重要事實</h3><p>ATM 的功能是提款及轉帳，不能解除分期付款或退款。</p></article>
+            </div>
+            <div class="highlight warning"><strong>先掛斷，不要照陌生來電指示操作。</strong>自行查詢商家或銀行官方客服；有疑慮可撥 165 查證。</div>
+          </div>
+          <aside class="notice"><span aria-hidden="true">!</span><span>即使對方能說出交易明細，也不能只因此直接相信來電者的身分。</span></aside>
+        </div>
+        <div class="source-row">
+          Wiki：<a href="../wiki/scam-types.md">scam-types.md</a><a href="../wiki/scam-detection.md">scam-detection.md</a>
+          SRC：<a href="../raw/SRC-003.md">003</a><a href="../raw/SRC-006.md">006</a>
+        </div>
+      </section>
+
+      <!-- 05 -->
+      <section class="slide" aria-labelledby="slide-title-5">
+        <p class="eyebrow">05 · 網路購物</p>
+        <h2 id="slide-title-5">網購流程也要留意後續要求</h2>
+        <p class="lead">來源描述的網購詐騙情境可能從社群貼文開始，再延伸至私訊、疑似物流連結或假客服。</p>
+        <div class="card-grid">
+          <article class="card"><span class="number">1</span><h3>社群貼文</h3><p>來源記載低價商品、免費贈送或假買家留言等例子。</p></article>
+          <article class="card"><span class="number">2</span><h3>轉往私訊</h3><p>有興趣的民眾可能被引導到 LINE 或 Messenger 洽談。</p></article>
+          <article class="card"><span class="number">3</span><h3>留意後續連結</h3><p>情境可能接續偽冒物流連結或假客服，要求進行後續操作。</p></article>
+          <article class="card"><span class="number">4</span><h3>獨立查證</h3><p>不要只依賴訊息中的連結或品牌名稱；透過官方管道重新確認。</p></article>
+        </div>
+        <div class="highlight">以上是來源記載的其中一種情境，不表示低價商品、免費贈送或社群交易一定涉及詐騙。</div>
+        <div class="source-row">
+          Wiki：<a href="../wiki/scam-types.md">scam-types.md</a><a href="../wiki/phishing-security.md">phishing-security.md</a>
+          SRC：<a href="../raw/SRC-005.md">005</a>
+        </div>
+      </section>
+
+      <!-- 06 -->
+      <section class="slide" aria-labelledby="slide-title-6">
+        <p class="eyebrow">06 · 釣魚連結</p>
+        <h2 id="slide-title-6">熟悉的網站外觀，不等於官方網站</h2>
+        <div class="split">
+          <div>
+            <p class="lead">釣魚訊息可能假冒政府、電信、金融、電商或物流機構，並用訂單、付款、配送、欠費或帳戶問題引導點擊。</p>
+            <h3>連結後可能出現的要求</h3>
+            <ul>
+              <li>輸入個人資料、信用卡資訊或 OTP。</li>
+              <li>聯繫所謂的線上客服。</li>
+              <li>操作網路銀行、ATM、無卡提款或掃描 QR Code。</li>
+            </ul>
+          </div>
+          <aside>
+            <div class="highlight"><strong>改用自己找到的官方管道。</strong><br>關閉原畫面，重新開啟官方 App、手動搜尋官方網站，或查詢官方客服。</div>
+            <p class="small" style="margin-top:14px">不能只因網站外觀熟悉或訊息出現機構名稱，就認定是官方平台。</p>
+          </aside>
+        </div>
+        <div class="source-row">
+          Wiki：<a href="../wiki/phishing-security.md">phishing-security.md</a><a href="../wiki/scam-detection.md">scam-detection.md</a>
+          SRC：<a href="../raw/SRC-004.md">004</a><a href="../raw/SRC-005.md">005</a>
+        </div>
+      </section>
+
+      <!-- 07 -->
+      <section class="slide" aria-labelledby="slide-title-7">
+        <p class="eyebrow">07 · 帳號安全</p>
+        <h2 id="slide-title-7">LINE 上的熟人，也要確認本人</h2>
+        <div class="split">
+          <div>
+            <p class="lead">來源記載，遭冒用的 LINE 帳號可能被用來向好友借錢、要求轉帳，或傳送詐騙連結。</p>
+            <div class="phone" aria-label="教學示例對話">
+              <p class="phone-top">對話示意・教學示例</p>
+              <div class="message"><span class="sender">熟悉的帳號（示意）</span>可以先借我一筆錢嗎？我現在不方便講電話。</div>
+            </div>
+          </div>
+          <aside>
+            <h3>收到突然的借款要求</h3>
+            <ol>
+              <li>不要只因帳號熟悉就直接相信。</li>
+              <li>不要點擊對方傳來的不明連結。</li>
+              <li>不要提供帳號驗證碼。</li>
+              <li>透過電話或其他管道直接向本人確認。</li>
+            </ol>
+          </aside>
+        </div>
+        <div class="source-row">
+          Wiki：<a href="../wiki/phishing-security.md">phishing-security.md</a><a href="../wiki/victim-response.md">victim-response.md</a>
+          SRC：<a href="../raw/SRC-004.md">004</a>
+        </div>
+      </section>
+
+      <!-- 08 -->
+      <section class="slide" aria-labelledby="slide-title-8">
+        <p class="eyebrow">08 · 假冒客服與電話</p>
+        <h2 id="slide-title-8">先不要照陌生來電的指示操作</h2>
+        <p class="lead">來源記載，詐騙者可能假冒商家、銀行或其他機構人員，以交易異常、重複扣款或帳戶問題為由聯絡民眾。</p>
+        <div class="card-grid">
+          <article class="card"><h3>接到可疑來電</h3><p>不急著操作；掛斷電話，不使用來電者提供的查證方式。</p></article>
+          <article class="card"><h3>自行查詢</h3><p>自行查找商家、銀行或機關的官方客服管道，確認是否確有異常。</p></article>
+          <article class="card"><h3>需要諮詢或查證</h3><p>可撥打 165 反詐騙諮詢專線查證或尋求協助。</p></article>
+          <article class="card"><h3>需要警方協助</h3><p>可撥打 110 或前往警察機關尋求協助。</p></article>
+        </div>
+        <div class="highlight warning">陌生來電或境外來電是提高警覺的線索，不表示每一通陌生或境外電話都是詐騙。</div>
+        <div class="source-row">
+          Wiki：<a href="../wiki/scam-tactics.md">scam-tactics.md</a><a href="../wiki/scam-detection.md">scam-detection.md</a><a href="../wiki/victim-response.md">victim-response.md</a>
+          SRC：<a href="../raw/SRC-003.md">003</a><a href="../raw/SRC-006.md">006</a>
+        </div>
+      </section>
+
+      <!-- 09 -->
+      <section class="slide" aria-labelledby="slide-title-9">
+        <p class="eyebrow">09 · 辨識方法</p>
+        <h2 id="slide-title-9">辨識不是猜身分，而是檢查要求</h2>
+        <p class="lead">單一線索不一定能單獨證明詐騙。留意訊息或來電要求你做什麼；若無法透過官方管道獨立查證，就先暫停操作。</p>
+        <div class="card-grid">
+          <article class="card"><span class="number">1</span><h3>要你點陌生連結？</h3><p>先不要點，改從官方 App 或網站查證。</p></article>
+          <article class="card"><span class="number">2</span><h3>要你提供敏感資料？</h3><p>不要隨意輸入個人資料、信用卡資訊或 OTP。</p></article>
+          <article class="card"><span class="number">3</span><h3>要你操作金融服務？</h3><p>不要依照陌生訊息或來電指示操作 ATM、網路銀行或轉帳。</p></article>
+          <article class="card"><span class="number">4</span><h3>能否獨立查證？</h3><p>掛斷或關閉原訊息，使用自己找到的官方客服或管道確認。</p></article>
+        </div>
+        <div class="highlight">重點：暫停可疑操作，使用官方管道重新確認，而不是只看對方說自己是誰。</div>
+        <div class="source-row">
+          Wiki：<a href="../wiki/scam-detection.md">scam-detection.md</a>
+          SRC：<a href="../raw/SRC-003.md">003</a><a href="../raw/SRC-004.md">004</a><a href="../raw/SRC-005.md">005</a><a href="../raw/SRC-006.md">006</a>
+        </div>
+      </section>
+
+      <!-- 10 -->
+      <section class="slide" aria-labelledby="slide-title-10">
+        <p class="eyebrow">10 · 遇到詐騙時</p>
+        <h2 id="slide-title-10">已經點擊或操作了，接下來怎麼辦？</h2>
+        <p class="lead">保持冷靜，停止可疑操作，並儘快透過官方管道尋求協助。依情況選擇相應管道。</p>
+        <div class="card-grid">
+          <article class="card"><h3>165 反詐騙專線</h3><p>詐騙諮詢、查證及求助。</p></article>
+          <article class="card"><h3>110</h3><p>尋求警方協助。</p></article>
+          <article class="card"><h3>就近警察機關</h3><p>可前往查證、報案及處理後續事宜。</p></article>
+          <article class="card"><h3>165 網路報案</h3><p>可先線上預製筆錄，再依後續程序完成相關手續。</p></article>
+        </div>
+        <div class="notice"><span aria-hidden="true">!</span><span><strong>線上預製筆錄不等於完成全部報案程序。</strong>後續仍須依警方指示完成相關手續；實際程序以警方最新公告及承辦機關指示為準。</span></div>
+        <div class="source-row">
+          Wiki：<a href="../wiki/victim-response.md">victim-response.md</a><a href="../wiki/basic-concepts.md">basic-concepts.md</a>
+          SRC：<a href="../raw/SRC-003.md">003</a><a href="../raw/SRC-004.md">004</a><a href="../raw/SRC-005.md">005</a><a href="../raw/SRC-006.md">006</a>
+        </div>
+      </section>
+
+      <!-- 11 -->
+      <section class="slide quiz-slide" data-quiz="1" aria-labelledby="slide-title-11"
+               data-answer="1"
+               data-explanation="Wiki 說明 ATM 只有提款及轉帳功能，不能解除分期付款或退款。遇到可疑來電，應掛斷並透過官方管道查證。">
+        <p class="eyebrow">11 · 測驗 1 / 5</p>
+        <h2 id="slide-title-11">ATM 能解除分期付款嗎？</h2>
+        <p class="lead">教學示例：來電者說交易設定錯誤、帳戶將重複扣款，要求你操作 ATM。哪個做法正確？</p>
+        <div class="quiz-options">
+          <button class="quiz-option" type="button" data-option="0">A. 依照對方指示操作 ATM。</button>
+          <button class="quiz-option" type="button" data-option="1">B. 先掛斷，再查詢官方客服；有疑慮可撥 165 查證。</button>
+          <button class="quiz-option" type="button" data-option="2">C. 先買遊戲點數，再問對方如何使用。</button>
+        </div>
+        <div class="feedback" aria-live="polite"></div>
+        <div class="quiz-score" aria-live="polite">目前答對 <span class="score-value">0</span> / 5 題</div>
+        <div class="source-row">
+          Wiki：<a href="../wiki/scam-types.md">scam-types.md</a><a href="../wiki/scam-detection.md">scam-detection.md</a>
+          SRC：<a href="../raw/SRC-003.md">003</a><a href="../raw/SRC-006.md">006</a>
+        </div>
+      </section>
+
+      <!-- 12 -->
+      <section class="slide quiz-slide" data-quiz="2" aria-labelledby="slide-title-12"
+               data-answer="0"
+               data-explanation="Wiki 建議不點擊不明連結、不提供個人資料、信用卡資訊或 OTP；應透過官方 App、手動搜尋官方網站或官方客服查證。">
+        <p class="eyebrow">12 · 測驗 2 / 5</p>
+        <h2 id="slide-title-12">訂單異常連結要求 OTP</h2>
+        <p class="lead">教學示例：收到「訂單異常」簡訊，連結要求輸入個人資料和 OTP。哪個做法較合適？</p>
+        <div class="quiz-options">
+          <button class="quiz-option" type="button" data-option="0">A. 不點連結、不提供 OTP，改從官方 App 或手動搜尋的官方網站查證。</button>
+          <button class="quiz-option" type="button" data-option="1">B. 只要網站有熟悉的商家名稱就可以輸入。</button>
+          <button class="quiz-option" type="button" data-option="2">C. 先輸入資料，再打電話確認。</button>
+        </div>
+        <div class="feedback" aria-live="polite"></div>
+        <div class="quiz-score" aria-live="polite">目前答對 <span class="score-value">0</span> / 5 題</div>
+        <div class="source-row">
+          Wiki：<a href="../wiki/scam-detection.md">scam-detection.md</a><a href="../wiki/victim-response.md">victim-response.md</a>
+          SRC：<a href="../raw/SRC-004.md">004</a><a href="../raw/SRC-005.md">005</a>
+        </div>
+      </section>
+
+      <!-- 13 -->
+      <section class="slide quiz-slide" data-quiz="3" aria-labelledby="slide-title-13"
+               data-answer="2"
+               data-explanation="熟悉的 LINE 帳號仍可能遭冒用。Wiki 建議不要只因訊息來自熟悉帳號就相信，應透過電話或其他管道直接向本人確認，也不要提供帳號驗證碼。">
+        <p class="eyebrow">13 · 測驗 3 / 5</p>
+        <h2 id="slide-title-13">LINE 好友突然借錢</h2>
+        <p class="lead">教學示例：熟悉的 LINE 帳號突然借錢。你應如何確認？</p>
+        <div class="quiz-options">
+          <button class="quiz-option" type="button" data-option="0">A. 帳號名稱熟悉，就直接匯款。</button>
+          <button class="quiz-option" type="button" data-option="1">B. 請對方提供驗證碼，確認帳號是真的。</button>
+          <button class="quiz-option" type="button" data-option="2">C. 透過電話或其他管道直接向本人確認。</button>
+        </div>
+        <div class="feedback" aria-live="polite"></div>
+        <div class="quiz-score" aria-live="polite">目前答對 <span class="score-value">0</span> / 5 題</div>
+        <div class="source-row">
+          Wiki：<a href="../wiki/phishing-security.md">phishing-security.md</a><a href="../wiki/victim-response.md">victim-response.md</a>
+          SRC：<a href="../raw/SRC-004.md">004</a>
+        </div>
+      </section>
+
+      <!-- 14 -->
+      <section class="slide quiz-slide" data-quiz="4" aria-labelledby="slide-title-14"
+               data-answer="1"
+               data-explanation="Wiki 記載過低價商品、轉往私訊及偽冒物流連結等網購情境，但也提醒不能只因低價或單一理由就斷定一定是詐騙。應依實際訊息和要求，透過官方管道查證。">
+        <p class="eyebrow">14 · 測驗 4 / 5</p>
+        <h2 id="slide-title-14">便宜商品後接上物流連結</h2>
+        <p class="lead">教學示例：社群上的低價商品交易引導你轉到私訊，之後收到疑似物流連結。哪個判斷較恰當？</p>
+        <div class="quiz-options">
+          <button class="quiz-option" type="button" data-option="0">A. 只要商品價格便宜，就能確定是詐騙。</button>
+          <button class="quiz-option" type="button" data-option="1">B. 這些可能是來源記載的警訊；先不要照陌生連結操作，改以官方管道查證。</button>
+          <button class="quiz-option" type="button" data-option="2">C. 只要對方提供物流品牌名稱，就可以放心輸入資料。</button>
+        </div>
+        <div class="feedback" aria-live="polite"></div>
+        <div class="quiz-score" aria-live="polite">目前答對 <span class="score-value">0</span> / 5 題</div>
+        <div class="source-row">
+          Wiki：<a href="../wiki/phishing-security.md">phishing-security.md</a><a href="../wiki/scam-detection.md">scam-detection.md</a>
+          SRC：<a href="../raw/SRC-005.md">005</a>
+        </div>
+      </section>
+
+      <!-- 15 -->
+      <section class="slide quiz-slide" data-quiz="5" aria-labelledby="slide-title-15"
+               data-answer="0"
+               data-explanation="Wiki 區分 165 的反詐諮詢、查證及求助，110 的警方協助，以及 165 網路報案的線上預製筆錄與後續報案程序。線上預製不代表全部報案程序已完成。">
+        <p class="eyebrow">15 · 測驗 5 / 5</p>
+        <h2 id="slide-title-15">165、110 和網路報案有何不同？</h2>
+        <p class="lead">哪一項說法符合 Wiki 的整理？</p>
+        <div class="quiz-options">
+          <button class="quiz-option" type="button" data-option="0">A. 165 用於反詐諮詢、查證及求助；110 用於尋求警方協助；網路報案可先線上預製筆錄，但仍有後續程序。</button>
+          <button class="quiz-option" type="button" data-option="1">B. 撥打 165 就等於已完成報案。</button>
+          <button class="quiz-option" type="button" data-option="2">C. 完成線上預製筆錄就代表全部報案程序已完成。</button>
+        </div>
+        <div class="feedback" aria-live="polite"></div>
+        <div class="quiz-score" aria-live="polite">目前答對 <span class="score-value">0</span> / 5 題</div>
+        <div class="button-row" style="margin-top:14px">
+          <button class="button subtle" id="restartQuiz" type="button">重新測驗（清除作答）</button>
+          <span class="small" id="quizSummary" aria-live="polite"></span>
+        </div>
+        <div class="source-row">
+          Wiki：<a href="../wiki/victim-response.md">victim-response.md</a><a href="../wiki/basic-concepts.md">basic-concepts.md</a>
+          SRC：<a href="../raw/SRC-006.md">006</a>
+        </div>
+      </section>
+
+      <!-- 16 -->
+      <section class="slide" aria-labelledby="slide-title-16">
+        <p class="eyebrow">16 · 結尾與資料來源</p>
+        <h2 id="slide-title-16">先停下，再查證</h2>
+        <p class="lead">遇到可疑電話、訊息或交易要求，先停止可疑操作，再透過官方管道確認；需要協助時，使用適合的官方求助管道。</p>
+        <div class="highlight">本簡報依 Wiki 摘要整理。案例與線索不代表所有詐騙都採取相同流程；實際求助及報案程序請以警方最新公告和承辦機關指示為準。</div>
+        <h3 style="margin-top:22px">七個 Wiki 頁面</h3>
+        <div class="source-row" style="margin-top:0;padding-top:0;border-top:0">
+          <a href="../wiki/index.md">index.md</a>
+          <a href="../wiki/basic-concepts.md">basic-concepts.md</a>
+          <a href="../wiki/scam-types.md">scam-types.md</a>
+          <a href="../wiki/phishing-security.md">phishing-security.md</a>
+          <a href="../wiki/scam-tactics.md">scam-tactics.md</a>
+          <a href="../wiki/scam-detection.md">scam-detection.md</a>
+          <a href="../wiki/victim-response.md">victim-response.md</a>
+        </div>
+        <h3 style="margin-top:18px">使用的來源摘要</h3>
+        <div class="source-row" style="margin-top:0;padding-top:0;border-top:0">
+          <a href="../raw/SRC-001.md">SRC-001</a>
+          <a href="../raw/SRC-003.md">SRC-003</a>
+          <a href="../raw/SRC-004.md">SRC-004</a>
+          <a href="../raw/SRC-005.md">SRC-005</a>
+          <a href="../raw/SRC-006.md">SRC-006</a>
+        </div>
+        <div class="button-row" style="margin-top:22px">
+          <button class="button primary" type="button" data-go="0">回到封面</button>
+          <button class="button subtle" type="button" data-go="10">重新測驗</button>
+        </div>
+        <div class="source-row">
+          Wiki：<a href="../wiki/index.md">index.md</a>
+          SRC：<a href="../raw/SRC-001.md">001</a><a href="../raw/SRC-003.md">003</a><a href="../raw/SRC-004.md">004</a><a href="../raw/SRC-005.md">005</a><a href="../raw/SRC-006.md">006</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="bottombar">
+      <span class="small">使用鍵盤 ← → 或下方按鈕切換頁面</span>
+      <div class="nav-group">
+        <button class="button" id="prevSlide" type="button">← 上一頁</button>
+        <button class="button primary" id="nextSlide" type="button">下一頁 →</button>
+      </div>
+    </footer>
+  </div>
+<!-- PART 3 START -->
+  <script>
+    (function () {
+      "use strict";
+
+      const slides = Array.from(document.querySelectorAll(".slide"));
+      const pageCount = document.getElementById("pageCount");
+      const progressFill = document.getElementById("progressFill");
+      const progressBar = document.getElementById("progressBar");
+      const prevButtons = [
+        document.getElementById("prevSlide"),
+        document.getElementById("topPrev")
+      ];
+      const nextButtons = [
+        document.getElementById("nextSlide"),
+        document.getElementById("topNext")
+      ];
+      let currentSlide = 0;
+
+      function showSlide(index) {
+        const boundedIndex = Math.max(0, Math.min(index, slides.length - 1));
+        currentSlide = boundedIndex;
+
+        slides.forEach(function (slide, i) {
+          const active = i === currentSlide;
+          slide.classList.toggle("active", active);
+          slide.setAttribute("aria-hidden", active ? "false" : "true");
+        });
+
+        const current = currentSlide + 1;
+        pageCount.textContent =
+          String(current).padStart(2, "0") + " / " + String(slides.length).padStart(2, "0");
+        const percent = (current / slides.length) * 100;
+        progressFill.style.width = percent + "%";
+        progressBar.setAttribute("aria-valuenow", String(current));
+
+        prevButtons.forEach(function (button) {
+          button.disabled = currentSlide === 0;
+        });
+        nextButtons.forEach(function (button) {
+          button.disabled = currentSlide === slides.length - 1;
+        });
+
+        const activeSlide = slides[currentSlide];
+        activeSlide.scrollTop = 0;
+      }
+
+      function moveSlide(direction) {
+        showSlide(currentSlide + direction);
+      }
+
+      prevButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+          moveSlide(-1);
+        });
+      });
+
+      nextButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+          moveSlide(1);
+        });
+      });
+
+      document.querySelectorAll("[data-go]").forEach(function (button) {
+        button.addEventListener("click", function () {
+          showSlide(Number(button.getAttribute("data-go")));
+        });
+      });
+
+      document.addEventListener("keydown", function (event) {
+        const target = event.target;
+        const isTyping = target instanceof HTMLElement &&
+          (target.isContentEditable ||
+           ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName));
+
+        if (isTyping || event.altKey || event.ctrlKey || event.metaKey) return;
+
+        if (event.key === "ArrowLeft") {
+          event.preventDefault();
+          moveSlide(-1);
+        } else if (event.key === "ArrowRight") {
+          event.preventDefault();
+          moveSlide(1);
+        }
+      });
+
+      // 情境互動：先選擇，再逐步揭露線索。
+      const scenarioButtons = Array.from(
+        document.querySelectorAll("[data-scenario-choice]")
+      );
+      const scenarioResult = document.getElementById("scenarioResult");
+      const scenarioClueBox = document.getElementById("scenarioClueBox");
+      const scenarioClues = document.getElementById("scenarioClues");
+      const nextClueButton = document.getElementById("nextClue");
+      const resetScenarioButton = document.getElementById("resetScenario");
+      const clueTexts = [
+        "通知以「帳戶驗證異常」為由，要求你點選訊息中的連結。",
+        "Wiki 記載，帳戶驗證異常可能被用來引導民眾點擊連結、進入仿冒網站或聯繫假客服。",
+        "較安全的做法是先不點擊、不輸入資料，再從官方 App、手動搜尋的官方網站或官方客服查證。"
+      ];
+      let revealedClues = 0;
+
+      function resetScenario() {
+        scenarioButtons.forEach(function (button) {
+          button.disabled = false;
+        });
+        scenarioResult.innerHTML = "";
+        scenarioResult.className = "reveal";
+        scenarioClueBox.classList.remove("visible");
+        scenarioClues.innerHTML = "";
+        revealedClues = 0;
+        nextClueButton.disabled = false;
+        nextClueButton.textContent = "揭露下一個線索";
+        nextClueButton.style.display = "";
+        resetScenarioButton.style.display = "none";
+      }
+
+      scenarioButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+          scenarioButtons.forEach(function (choice) {
+            choice.disabled = true;
+          });
+
+          const choseClick = button.getAttribute("data-scenario-choice") === "click";
+          scenarioResult.className = "reveal visible highlight " +
+            (choseClick ? "warning" : "");
+          scenarioResult.textContent = choseClick
+            ? "先不要點擊。這則教學訊息的連結與帳戶驗證要求值得查證；避免在原訊息中繼續操作。"
+            : "先停止並查證是較安全的選擇。不要使用訊息中的連結，改由官方管道確認。";
+
+          scenarioClueBox.classList.add("visible");
+          scenarioClues.innerHTML = "";
+          revealedClues = 0;
+          nextClueButton.disabled = false;
+          nextClueButton.textContent = "揭露下一個線索";
+          nextClueButton.style.display = "";
+          resetScenarioButton.style.display = "none";
+        });
+      });
+
+      nextClueButton.addEventListener("click", function () {
+        if (revealedClues >= clueTexts.length) return;
+
+        const item = document.createElement("li");
+        item.textContent = clueTexts[revealedClues];
+        scenarioClues.appendChild(item);
+        revealedClues += 1;
+
+        if (revealedClues === clueTexts.length) {
+          nextClueButton.disabled = true;
+          nextClueButton.textContent = "線索已全部揭露";
+          resetScenarioButton.style.display = "inline-flex";
+        }
+      });
+
+      resetScenarioButton.addEventListener("click", resetScenario);
+
+      // 五題測驗：每題只能作答一次；即時顯示答案、解析與計分。
+      const quizSlides = Array.from(document.querySelectorAll(".quiz-slide"));
+      const answered = new Map();
+
+      function updateScore() {
+        let correct = 0;
+        answered.forEach(function (isCorrect) {
+          if (isCorrect) correct += 1;
+        });
+
+        document.querySelectorAll(".score-value").forEach(function (element) {
+          element.textContent = String(correct);
+        });
+
+        const summary = document.getElementById("quizSummary");
+        if (summary) {
+          summary.textContent = answered.size === quizSlides.length
+            ? "測驗完成：答對 " + correct + " / " + quizSlides.length + " 題。"
+            : "已作答 " + answered.size + " / " + quizSlides.length + " 題";
+        }
+      }
+
+      quizSlides.forEach(function (slide) {
+        const questionNumber = Number(slide.getAttribute("data-quiz"));
+        const answerIndex = Number(slide.getAttribute("data-answer"));
+        const options = Array.from(slide.querySelectorAll(".quiz-option"));
+        const feedback = slide.querySelector(".feedback");
+
+        options.forEach(function (option) {
+          option.addEventListener("click", function () {
+            if (answered.has(questionNumber)) return;
+
+            const selectedIndex = Number(option.getAttribute("data-option"));
+            const isCorrect = selectedIndex === answerIndex;
+            answered.set(questionNumber, isCorrect);
+
+            options.forEach(function (item, index) {
+              item.disabled = true;
+              if (index === answerIndex) item.classList.add("correct");
+              if (index === selectedIndex && !isCorrect) item.classList.add("incorrect");
+            });
+
+            feedback.className = "feedback visible " +
+              (isCorrect ? "correct-feedback" : "incorrect-feedback");
+            feedback.textContent =
+              (isCorrect ? "答對了！" : "再留意這個原則。") +
+              " 正確答案：" + String.fromCharCode(65 + answerIndex) + "。 " +
+              slide.getAttribute("data-explanation");
+
+            updateScore();
+          });
+        });
+      });
+
+      const restartQuizButton = document.getElementById("restartQuiz");
+      restartQuizButton.addEventListener("click", function () {
+        answered.clear();
+
+        quizSlides.forEach(function (slide) {
+          slide.querySelectorAll(".quiz-option").forEach(function (option) {
+            option.disabled = false;
+            option.classList.remove("correct", "incorrect");
+          });
+
+          const feedback = slide.querySelector(".feedback");
+          feedback.className = "feedback";
+          feedback.textContent = "";
+        });
+
+        updateScore();
+        showSlide(10);
+      });
+
+      showSlide(0);
+      updateScore();
+    }());
+  </script>
+</body>
+</html>
